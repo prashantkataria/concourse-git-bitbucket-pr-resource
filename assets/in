@@ -63,9 +63,11 @@ fi
 pr=$(mktemp /tmp/resource.XXXXXX)
 curl -sL --fail "${authentication[@]}" "${uri}" > "${pr}"
 
+echo "${pr}"
 git_payload=$(echo "${git}" | jq --argjson version "${version}" --argjson params "${git_params}" '
     {source: (. * {branch: $version.branch})} + {version: {ref: $version.commit}} + {params: $params}
 ')
+echo "${git_payload}"
 
 if [[ "${fetch_upstream}" != "false" ]]; then
     if [[ "$bitbucket_type" == "server" ]]; then
@@ -78,7 +80,7 @@ if [[ "${fetch_upstream}" != "false" ]]; then
         ')
     fi
 fi
-
+echo "fetched branch."
 resource_path="${@%/}"
 if [[ "${skip_download}" = "false" ]]; then
     echo "$git_payload" | /opt/git-resource/in "${resource_path}"
